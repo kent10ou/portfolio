@@ -1,3 +1,14 @@
+# Kent Ou Portfolio
+Welcome to my portfolio page: kent10ou.com
+I utilized the Prologue theme by HTML5 UP
+This page is hosted by my raspberry pi on a node server
+
+future iterations:
+	- enable send message through node
+	- adding subdomain to point to blog
+
+======
+
 Prologue by HTML5 UP
 html5up.net | @ajlkn
 Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
