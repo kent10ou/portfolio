@@ -1,12 +1,22 @@
 'use strict';
+const fs = require('fs');
 const config = require('./config');
 const http = require('http');
+const https = require('https');
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const app = express();
 const PORT = 8080;
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+var options = {
+  key: fs.readFileSync('./sslcert/key.pem', 'utf-8'),
+  cert: fs.readFileSync('./sslcert/cert.pem', 'utf-8'),
+  requestCert: false,
+  rejectUnauthorized: false
+};
+
 
 // Static Files
 app.use(express.static('public'));
@@ -64,9 +74,28 @@ app.post('/send_message', urlencodedParser, (req, res) => {
   res.end();
 })
 
+/*
+=== HTTP SERVER ===
+const httpServer = http.createServer(app);
+httpServer.listen(8080, () => {
+  const host = httpServer
+  const port = httpServer.addresss().port;
+  console.log('http server listening on: http://[%s]:%s', host, port);
+});
 
-const server = app.listen(PORT, function () {
-  const host = server.address().address;
-  const port = server.address().port;
-  console.log("Server listening on: http://[%s]:%s", host, port);
-})
+=== HTTPS SERVER ===
+*/
+const httpsServer = https.createServer(options, app);
+httpsServer.listen(8443, () => {
+  const host = httpsServer;
+  console.log('HTTPS HOST: ', host);
+  console.log('https server running at ' + 8443);
+});
+//*/
+
+// const server = app.listen(PORT, function () {
+//   const host = server.address().address;
+//   const port = server.address().port;
+//   console.log('SERVER: ', server);
+//   console.log("Server listening on: http://[%s]:%s", host, port);
+// });

@@ -15,105 +15,118 @@
 	});
 
 	$(function() {
-
 		var	$window = $(window),
-			$body = $('body');
+				$body = $('body');
 
 		// Disable animations/transitions until the page has loaded.
-			$body.addClass('is-loading');
+		$body.addClass('is-loading');
 
-			$window.on('load', function() {
-				$body.removeClass('is-loading');
-			});
+		$window.on('load', function() {
+			$body.removeClass('is-loading');
+		});
 
 		// CSS polyfills (IE<9).
-			if (skel.vars.IEVersion < 9)
-				$(':last-child').addClass('last-child');
+		if (skel.vars.IEVersion < 9)
+			$(':last-child').addClass('last-child');
 
 		// Fix: Placeholder polyfill.
-			$('form').placeholder();
+		$('form').placeholder();
 
 		// Prioritize "important" elements on mobile.
-			skel.on('+mobile -mobile', function() {
-				$.prioritize(
-					'.important\\28 mobile\\29',
-					skel.breakpoint('mobile').active
-				);
-			});
+		skel.on('+mobile -mobile', function() {
+			$.prioritize(
+				'.important\\28 mobile\\29',
+				skel.breakpoint('mobile').active
+			);
+		});
 
 		// Scrolly links.
-			$('.scrolly').scrolly();
+		$('.scrolly').scrolly();
 
 		// Nav.
-			var $nav_a = $('#nav a');
+		var $nav_a = $('#nav a');
 
-			// Scrolly-fy links.
+		// Scrolly-fy links.
+		$nav_a
+			.scrolly()
+			.on('click', function(e) {
+				var t = $(this),
+						href = t.attr('href');
+				if (href[0] != '#')
+					return;
+
+				e.preventDefault();
+
+				// Clear active and lock scrollzer until scrolling has stopped
 				$nav_a
-					.scrolly()
-					.on('click', function(e) {
+					.removeClass('active')
+					.addClass('scrollzer-locked');
 
-						var t = $(this),
-							href = t.attr('href');
+				// Set this link to active
+				t.addClass('active');
+			});
 
-						if (href[0] != '#')
-							return;
+		// Initialize scrollzer.
+		var ids = [];
 
-						e.preventDefault();
+		$nav_a.each(function() {
+			var href = $(this).attr('href');
+			if (href[0] != '#')
+				return;
 
-						// Clear active and lock scrollzer until scrolling has stopped
-							$nav_a
-								.removeClass('active')
-								.addClass('scrollzer-locked');
+			ids.push(href.substring(1));
+		});
 
-						// Set this link to active
-							t.addClass('active');
-
-					});
-
-			// Initialize scrollzer.
-				var ids = [];
-
-				$nav_a.each(function() {
-
-					var href = $(this).attr('href');
-
-					if (href[0] != '#')
-						return;
-
-					ids.push(href.substring(1));
-
-				});
-
-				$.scrollzer(ids, { pad: 200, lastHack: true });
+		$.scrollzer(ids, { pad: 200, lastHack: true });
 
 		// Header (narrower + mobile).
 
-			// Toggle.
-				$(
-					'<div id="headerToggle">' +
-						'<a href="#header" class="toggle"></a>' +
-					'</div>'
-				)
-					.appendTo($body);
+		// Toggle.
+		$(
+			'<div id="headerToggle">' +
+				'<a href="#header" class="toggle"></a>' +
+			'</div>'
+		)
+		.appendTo($body);
 
-			// Header.
-				$('#header')
-					.panel({
-						delay: 500,
-						hideOnClick: true,
-						hideOnSwipe: true,
-						resetScroll: true,
-						resetForms: true,
-						side: 'left',
-						target: $body,
-						visibleClass: 'header-visible'
-					});
+		// Header.
+		$('#header')
+			.panel({
+				delay: 500,
+				hideOnClick: true,
+				hideOnSwipe: true,
+				resetScroll: true,
+				resetForms: true,
+				side: 'left',
+				target: $body,
+				visibleClass: 'header-visible'
+			});
 
-			// Fix: Remove transitions on WP<10 (poor/buggy performance).
-				if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
-					$('#headerToggle, #header, #main')
-						.css('transition', 'none');
+		// Fix: Remove transitions on WP<10 (poor/buggy performance).
+		if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
+			$('#headerToggle, #header, #main')
+				.css('transition', 'none');
 
+		// Attach a submit handler to the form
+		$( "#contact" ).submit(function( event ) {
+
+		  // Stop form from submitting normally
+		  event.preventDefault();
+
+		  // Get some values from elements on the page:
+		  var $form = $( this ),
+		    term = $form.find( "input[name='s']" ).val(),
+		    url = $form.attr( "action" );
+
+		  // Send the data using post
+		  var posting = $.post( url, { s: term } );
+
+		  // Put the results in a div
+		  posting.done(function( data ) {
+		    var content = $( data ).find( "#content" );
+		    $( "#result" ).empty().append( content );
+		  });
+		});
 	});
 
 })(jQuery);
