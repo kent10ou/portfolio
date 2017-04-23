@@ -84,18 +84,18 @@ httpServer.listen(8080, () => {
 });
 
 === HTTPS SERVER ===
-*/
+
 const httpsServer = https.createServer(options, app);
 httpsServer.listen(8443, () => {
   const host = httpsServer;
   console.log('HTTPS HOST: ', host);
   console.log('https server running at ' + 8443);
 });
-//*/
+*/
 
-// const server = app.listen(PORT, function () {
-//   const host = server.address().address;
-//   const port = server.address().port;
-//   console.log('SERVER: ', server);
-//   console.log("Server listening on: http://[%s]:%s", host, port);
-// });
+const server = app.listen(PORT, function () {
+  const host = server.address().address;
+  const port = server.address().port;
+  console.log('SERVER: ', server);
+  console.log("Server listening on: http://[%s]:%s", host, port);
+});
