@@ -1,9 +1,4 @@
 <!DOCTYPE HTML>
-<!--
-	Prologue by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
 		<title>Welcome! - Kent Ou</title>
@@ -184,13 +179,14 @@
 
 							<p>Send me a message! Feel free to reach out to me to chat about anything!</p>
 
-							<form name="contact_form" id="contact" method="post" action="/send_message">  <!--method="post" action="/send_message" -->
+							<form name="contact_form" id="contact">  <!--method="post" action="/send_message" -->
 								<div class="row">
-									<div class="6u 12u$(mobile)"><input type="text" name="name" placeholder="Name" /></div>
-									<div class="6u$ 12u$(mobile)"><input type="text" name="email" placeholder="Email" /></div>
+									<div class="6u 12u$(mobile)"><input type="text" id="name" name="name" placeholder="Name" /></div>
+									<div class="6u$ 12u$(mobile)"><input type="text" id="email" name="email" placeholder="Email" /></div>
 									<div class="12u$">
-										<textarea name="message" placeholder="Message"></textarea>
+										<textarea id="message" name="message" placeholder="Message"></textarea>
 									</div>
+									<input type="text" name="email" style="display: none;">
 									<div class="12u$">
 										<input type="submit" value="Send Message" />
 									</div>
@@ -222,4 +218,9 @@
 			<script src="assets/js/main.js"></script>
 
 	</body>
+	<!--
+		Prologue by HTML5 UP
+		html5up.net | @ajlkn
+		Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+	-->
 </html>
