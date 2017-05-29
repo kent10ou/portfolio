@@ -1,6 +1,6 @@
 'use strict';
 const fs = require('fs');
-const config = require('./config');
+//const config = require('./config');
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -80,7 +80,7 @@ app.post('/send_message', urlencodedParser, (req, res) => {
 const httpServer = http.createServer(app);
 httpServer.listen(8080, () => {
   const host = httpServer
-  const port = httpServer.addresss().port;
+  const port = httpServer.address().port;
   console.log('http server listening on: http://[%s]:%s', host, port);
 });
 /*
