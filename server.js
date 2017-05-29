@@ -75,17 +75,16 @@ app.post('/send_message', urlencodedParser, (req, res) => {
   res.end();
 })
 
-/*
-=== HTTP SERVER ===
+
+// === HTTP SERVER ===
 const httpServer = http.createServer(app);
 httpServer.listen(8080, () => {
   const host = httpServer
   const port = httpServer.addresss().port;
   console.log('http server listening on: http://[%s]:%s', host, port);
 });
-
+/*
 === HTTPS SERVER ===
-*/
 const httpsServer = https.createServer(options, app);
 httpsServer.listen(8443, () => {
   const host = httpsServer.address().address;
