@@ -127,23 +127,33 @@
 		    $( "#result" ).empty().append( content );
 		  });
 		});
+
+		
 	});
 	
+	var e = document.getElementById("email");
+    e.parentNode.removeChild(e);
+
+
 	$("#contact").on("submit", function(event) {
 		event.preventDefault();
-		var newMessage = {
-			name: $("#name").val().trim(),
-			email: $("#email").val().trim(),
-			message: $("#message").val().trim(),
-		};
+		if ($('#email').val().length === 0) {
+			var newMessage = {
+				name: $("#name").val().trim(),
+				email: $("#email-real").val().trim(),
+				message: $("#message").val().trim(),
+			};
 
-		console.log('newMessageObj: ', newMessage);
+			console.log('newMessageObj: ', newMessage);
 
-		$.post("/send_message", newMessage)
-			.done(function(data) {
-				console.log(data);
-				alert("Mail Sent!");
-		});
+			$.post("/send_message", newMessage)
+				.done(function(data) {
+					console.log(data);
+					alert("Mail Sent!");
+			});
+		} else {
+			break;
+		}
 	});
 
 })(jQuery);
