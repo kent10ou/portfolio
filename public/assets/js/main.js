@@ -137,23 +137,20 @@
 
 	$("#contact").on("submit", function(event) {
 		event.preventDefault();
-		if ($('#email').val().length === 0) {
-			var newMessage = {
-				name: $("#name").val().trim(),
-				email: $("#email-real").val().trim(),
-				message: $("#message").val().trim(),
-			};
+		var newMessage = {
+			name: $("#name").val().trim(),
+			email: $("#email-real").val().trim(),
+			message: $("#message").val().trim(),
+		};
 
-			console.log('newMessageObj: ', newMessage);
+		console.log('newMessageObj: ', newMessage);
 
-			$.post("/send_message", newMessage)
-				.done(function(data) {
-					console.log(data);
-					alert("Mail Sent!");
-			});
-		} else {
-			break;
-		}
+		$.post("/send_message", newMessage)
+			.done(function(data) {
+				console.log(data);
+				alert("Mail Sent!");
+		});
+
 	});
 
 })(jQuery);

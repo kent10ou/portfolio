@@ -7,14 +7,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
+const request = require('request');
 const app = express();
 const PORT = 8080;
 
 var options = {
-  key: fs.readFileSync('./sslcert/key.pem', 'utf-8'),
-  cert: fs.readFileSync('./sslcert/cert.pem', 'utf-8'),
-  requestCert: false,
-  rejectUnauthorized: false
+    key: fs.readFileSync('./sslcert/key.pem', 'utf-8'),
+    cert: fs.readFileSync('./sslcert/cert.pem', 'utf-8'),
+    requestCert: false,
+    rejectUnauthorized: false
 };
 
 
@@ -23,58 +24,80 @@ app.use(express.static('public'));
 
 // Routes
 app.get('/', (req, res) => {
-  res.send()
+    res.send()
 })
 
 app.post('/send_message', urlencodedParser, (req, res) => {
-  console.log('REQDATBODY: ', req.body);
+    console.log('REQDATBODY: ', req.body);
 
-  // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      service: 'Gmail',
-      auth: {
-          user: config.EMAIL,
-          pass: config.PASSWORD
-      }
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        service: 'Gmail',
+        auth: {
+            user: config.EMAIL,
+            pass: config.PASSWORD
+        }
+    });
+
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: req.body.name + ' <' + req.body.email + '>', // sender address
+        to: 'kent10ou@gmail.com', // list of receivers
+        subject: 'Portolio Page Contact Form', // Subject line
+        text: 'From: <' + req.body.email + '> Message: ' + req.body.message, // plain text body
+        // html: '<b>Hello world ?</b>' // html body
+    };
+
+    console.log('MAILOPTIONS: ', mailOptions);
+
+    transporter.verify(function(error, success) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Server is ready to take our messages');
+        }
+    });
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, response) => {
+        if (error) {
+            return console.log('ERROR IN TRANSPORTER: ', error);
+        } else {
+            console.log('RESPONSE: ', response);
+            console.log('Message %s sent: %s', response.messageId, response.response);
+            res.render('contact', { title: 'Kent Ou - Contact', msg: 'Message sent! Thank you.', err: false, page: 'contact' });
+        }
+    });
+    // g-recaptcha-response is the key that browser will generate upon form submit.
+    // if its blank or null means user has not selected the captcha, so return the error.
+    if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
+        return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});
+    }
+    // Put your secret key here.
+    var secretKey = config.SECRET;
+    // req.connection.remoteAddress will provide IP address of connected user.
+    var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
+    // Hitting GET request to the URL, Google will respond with success or error scenario.
+    request(verificationUrl,function(error,response,body) {
+        body = JSON.parse(body);
+        // Success will be true or false depending upon captcha validation.
+        if(body.success !== undefined && !body.success) {
+            return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});
+        }
+        res.json({"responseCode" : 0,"responseDesc" : "Sucess"});
   });
-
-  // setup email data with unicode symbols
-  let mailOptions = {
-      from: req.body.name + ' <' + req.body.email + '>', // sender address
-      to: 'kent10ou@gmail.com', // list of receivers
-      subject: 'Portolio Page Contact Form', // Subject line
-      text: 'From: <' + req.body.email + '> Message: ' + req.body.message, // plain text body
-      // html: '<b>Hello world ?</b>' // html body
-  };
-
-  console.log('MAILOPTIONS: ', mailOptions);
-
-  transporter.verify(function(error, success) {
-      if (error) {
-          console.log(error);
-      } else {
-          console.log('Server is ready to take our messages');
-      }
-  });
-
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, response) => {
-      if (error) {
-          return console.log('ERROR IN TRANSPORTER: ', error);
-      } else {
-          console.log('RESPONSE: ', response);
-          console.log('Message %s sent: %s', response.messageId, response.response);
-          res.render('contact', { title: 'Kent Ou - Contact', msg: 'Message sent! Thank you.', err: false, page: 'contact' });
-      }
-  });
-
+  
   // res.send({ success: true });
   res.end();
 })
 
+// This will handle 404 requests.
+app.use("*", function (req,res) {
+    res.status(404).send("404");
+});
 
 // === HTTP SERVER ===
 const httpServer = http.createServer(app);
