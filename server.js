@@ -1,6 +1,6 @@
 'use strict';
 const fs = require('fs');
-const config = require('./config');
+//const config = require('./config');
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -11,13 +11,14 @@ const request = require('request');
 const app = express();
 const PORT = 8080;
 
+/*
 var options = {
     key: fs.readFileSync('./sslcert/key.pem', 'utf-8'),
     cert: fs.readFileSync('./sslcert/cert.pem', 'utf-8'),
     requestCert: false,
     rejectUnauthorized: false
 };
-
+*/
 
 // Static Files
 app.use(express.static('public'));
