@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const request = require('request');
 const app = express();
-const PORT = 8080;
+const PORT = 80;
 
 /*
 var options = {
