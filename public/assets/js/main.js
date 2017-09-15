@@ -106,51 +106,32 @@
 		if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
 			$('#headerToggle, #header, #main')
 				.css('transition', 'none');
-
-		// Attach a submit handler to the form
-		$( "#contact" ).submit(function( event ) {
-
-		  // Stop form from submitting normally
-		  event.preventDefault();
-
-		  // Get some values from elements on the page:
-		  var $form = $( this ),
-		    term = $form.find( "input[name='s']" ).val(),
-		    url = $form.attr( "action" );
-
-		  // Send the data using post
-		  var posting = $.post( url, { s: term } );
-
-		  // Put the results in a div
-		  posting.done(function( data ) {
-		    var content = $( data ).find( "#content" );
-		    $( "#result" ).empty().append( content );
-		  });
-		});
-
-		
-	});
+				
+		var e = document.getElementById("email");
+		e.parentNode.removeChild(e);
 	
-	var e = document.getElementById("email");
-    e.parentNode.removeChild(e);
-
-
-	$("#contact").on("submit", function(event) {
-		event.preventDefault();
-		var newMessage = {
-			name: $("#name").val().trim(),
-			email: $("#email-real").val().trim(),
-			message: $("#message").val().trim(),
-		};
-
-		console.log('newMessageObj: ', newMessage);
-
-		$.post("/send_message", newMessage)
-			.done(function(data) {
-				console.log(data);
-				alert("Mail Sent!");
+		// contact form submit 
+		$("#contact").on("submit", (event) => {
+			event.preventDefault();
+			var newMessage = {
+				"name": $("#name").val().trim(),
+				"email": $("#email-real").val().trim(),
+				"message": $("#message").val().trim(),
+			};
+	
+			// console.log('newMessageObj: ', newMessage);
+			
+			// POST request to send msg
+			$.post("/send_message", newMessage)
+				.done( (data) => {
+					console.log('data: ', data);
+					alert("Mail Sent!");
+				})
+				.fail( (hxr, status, error) => {
+					alert("Failed.");
+				})
 		});
-
+	
 	});
 
 })(jQuery);
