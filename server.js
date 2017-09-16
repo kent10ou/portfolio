@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const request = require('request');
+const reCAPTCHA = require('recaptcha2');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -19,6 +20,11 @@ var options = {
   rejectUnauthorized: false
 };
 */
+
+const recaptcha = new reCAPTCHA({
+  siteKey: 'config.SITEKEY',
+  secretKey: 'config.SECRET'
+});
 
 // Static Files
 app.use(express.static('./public'));
@@ -55,17 +61,8 @@ app.post('/send_message', urlencodedParser, (req, res) => {
         console.log('Server is ready to take our messages');
     }
   });
-
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, response) => {
-    if (error) {
-        return console.log('ERROR IN TRANSPORTER: ', error);
-    } else {
-      console.log('RESPONSE: ', response);
-      console.log('Message %s sent: %s', response.messageId, response.response);
-      // res.render('contact', { title: 'Kent Ou - Contact', msg: 'Message sent! Thank you.', err: false, page: 'contact' });
-    }
-  });
+  
+  console.log('REQUEST: ', req.body);
 
   // g-recaptcha-response is the key that browser will generate upon form submit.
   // if its blank or null means user has not selected the captcha, so return the error.
@@ -83,11 +80,23 @@ app.post('/send_message', urlencodedParser, (req, res) => {
     if(body.success !== undefined && !body.success) {
       return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});
     }
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, response) => {
+      if (error) {
+          return console.log('ERROR IN TRANSPORTER: ', error);
+      } else {
+        console.log('RESPONSE: ', response);
+        console.log('Message %s sent: %s', response.messageId, response.response);
+        // res.render('contact', { title: 'Kent Ou - Contact', msg: 'Message sent! Thank you.', err: false, page: 'contact' });
+      }
+    });
     res.json({"responseCode" : 0,"responseDesc" : "Success"});
   });
 
   res.end();
-})
+
+});
 
 // This will handle 404 requests.
 app.use("*", function (req,res) {

@@ -125,7 +125,6 @@
 			$.post("/send_message", newMessage)
 				.done( (data) => {
 					console.log('data: ', data);
-					alert("Mail Sent!");
 				})
 				.fail( (hxr, status, error) => {
 					alert("Failed.");
