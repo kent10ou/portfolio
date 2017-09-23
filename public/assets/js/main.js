@@ -110,6 +110,10 @@
 		var e = document.getElementById("email");
 		e.parentNode.removeChild(e);
 	
+		// var recapchaResponse = $.get('', (data) => {
+		// 	console.log('recaptcha response: ', data);
+		// })
+
 		// contact form submit 
 		$("#contact").on("submit", (event) => {
 			event.preventDefault();
@@ -117,14 +121,22 @@
 				"name": $("#name").val().trim(),
 				"email": $("#email-real").val().trim(),
 				"message": $("#message").val().trim(),
-			};
-	
+				"g-recaptcha-response": grecaptcha.getResponse()
+			};	
+
 			// console.log('newMessageObj: ', newMessage);
-			
+
 			// POST request to send msg
-			$.post("/send_message", newMessage)
+			$.post("/send_message", newMessage, (data) => {
+				console.log('post data: ', data);
+			})
 				.done( (data) => {
 					console.log('data: ', data);
+					if (data.responseCode === 1) {
+						alert("Please select captcha or Failed captcha verification")
+					} else {
+						alert("Success!");
+					}
 				})
 				.fail( (hxr, status, error) => {
 					alert("Failed.");
