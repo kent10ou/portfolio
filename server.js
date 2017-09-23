@@ -26,32 +26,36 @@ const recaptcha = new reCAPTCHA({
   secretKey: 'config.SECRET'
 });
 
-// create reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  service: 'Gmail',
-  auth: {
-    user: config.EMAIL,
-    pass: config.PASSWORD
-  }
-});
 
-transporter.verify(function(error, success) {
-  if (error) {
-      console.log(error);
-  } else {
-      console.log('Server is ready to take our messages');
-  }
-});
 
 // Static Files
 app.use(express.static('./public'));
 
+
 app.post('/send_message', urlencodedParser, (req, res) => {
   console.log('REQDATBODY: ', req.connection.remoteAddress);
     // setup email data with unicode symbols
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    service: 'Gmail',
+    auth: {
+      user: config.EMAIL,
+      pass: config.PASSWORD
+    }
+  });
+
+  transporter.verify(function(error, success) {
+    if (error) {
+        console.log(error);
+    } else {
+        console.log('Server is ready to take our messages');
+    }
+  });
+
+
   let mailOptions = {
     from: req.body.name + ' <' + req.body.email + '>', // sender address
     to: 'kent10ou@gmail.com', // list of receivers
@@ -60,6 +64,18 @@ app.post('/send_message', urlencodedParser, (req, res) => {
   };
 
   console.log('MAILOPTIONS: ', mailOptions);
+/*
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, response) => {
+      if (error) {
+          return console.log('ERROR IN TRANSPORTER: ', error);
+      } else {
+        console.log('RESPONSE: ', response);
+        console.log('Message %s sent: %s', response.messageId, response.response);
+        // res.render('contact', { title: 'Kent Ou - Contact', msg: 'Message sent! Thank you.', err: false, page: 'contact' });
+      }
+    });
+*/
 
 /*
   recaptcha.validateRequest(req, req.connection.remoteAddress)
@@ -72,18 +88,6 @@ app.post('/send_message', urlencodedParser, (req, res) => {
     // invalid
     console.log('recaptcha FAIL!');
     res.json({formSubmit:false,errors:recaptcha.translateErrors(errorCodes)});// translate error codes to human readable text
-  });
-*/
-/*
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, (error, response) => {
-    if (error) {
-        return console.log('ERROR IN TRANSPORTER: ', error);
-    } else {
-      console.log('RESPONSE: ', response);
-      console.log('Message %s sent: %s', response.messageId, response.response);
-      // res.render('contact', { title: 'Kent Ou - Contact', msg: 'Message sent! Thank you.', err: false, page: 'contact' });
-    }
   });
 */
 
@@ -121,8 +125,8 @@ app.post('/send_message', urlencodedParser, (req, res) => {
     }
   });
 
-
 });
+
 
 // This will handle 404 requests.
 app.use("*", function (req,res) {
