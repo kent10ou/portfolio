@@ -1,5 +1,5 @@
 'use strict';
-// const fs = require('fs');
+const fs = require('fs');
 const config = require('./config');
 const http = require('http');
 const https = require('https');
@@ -11,15 +11,15 @@ const request = require('request');
 const reCAPTCHA = require('recaptcha2');
 const app = express();
 const PORT = process.env.PORT || 8080;
+const privateKey = fs.readFileSync('./sslcert/domain.key', 'utf8');
+const certificate = fs.readFileSync('./sslcert/domain.crt', 'utf8');
 
-/*
 var options = {
-  key: fs.readFileSync('./sslcert/key.pem', 'utf-8'),
-  cert: fs.readFileSync('./sslcert/cert.pem', 'utf-8'),
-  requestCert: false,
-  rejectUnauthorized: false
+  key: privateKey,
+  cert: certificate
+ // requestCert: false,
+ // rejectUnauthorized: false
 };
-*/
 
 const recaptcha = new reCAPTCHA({
   siteKey: 'config.SITEKEY',
@@ -30,6 +30,14 @@ const recaptcha = new reCAPTCHA({
 
 // Static Files
 app.use(express.static('./public'));
+
+app.get('/', (req, res) => {
+  res.send('YES IT WORKS');
+});
+
+app.get('/.well-known/acme-challenge/eWT1nuCSNOa14MAnMfTqGMxbgZbi-kqQbj-qnpmn3J0', (req, res) => {
+    res.send('eWT1nuCSNOa14MAnMfTqGMxbgZbi-kqQbj-qnpmn3J0.l9G_VGS6iEqJvKr4Btcbgcv2LRGv1dAgFSxD3-eGdGQ');
+});
 
 
 app.post('/send_message', urlencodedParser, (req, res) => {
@@ -133,12 +141,13 @@ app.use("*", function (req,res) {
   res.status(404).send("404");
 });
 
+
 // === HTTP SERVER ===
 const server = app.listen(PORT, function () {
   console.log('host: ', server.address())
   const host = server.address().address;
   const port = server.address().port;
-  console.log("Server listening on: http://[%s]:%s", host, port);
+  console.log("http Server listening on: http://[%s]:%s", host, port);
 });
 
 /*
@@ -151,13 +160,11 @@ httpServer.listen(PORT, () => {
 });
 */
 /*
-=== HTTPS SERVER ===
-const httpsServer = https.createServer(options, app);
-httpsServer.listen(8443, () => {
-  const host = httpsServer.address().address;
-  const port = httpsServer.address().port;
-  // console.log('HTTPS HOST: ', host);
-  // console.log('https server running at ' + 8443);
-  console.log("Server listening on: http://[%s]:%s", host, port);
+// === HTTPS SERVER ===
+const httpsServer = https.createServer(options, app)
+  .listen(8080, () => {
+    const host = httpsServer.address().address;
+    const port = httpsServer.address().port;
+    console.log("HTTPS server listening on: https://[%s]:%s", host, port);
 });
 */
